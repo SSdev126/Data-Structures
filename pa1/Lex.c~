@@ -1,0 +1,100 @@
+//-----------------------------------------------------------------
+// Created by : Smith, Shane
+//              ssmith30
+//              1/14/2021
+//
+//              Lex.C
+// Assignment: Pa1: lex List
+//             CSE 101, Indroduction to Data Structures and algorithms
+//             UC Santa Cruz, Winter 2021.
+//
+// Description: This program creates a List that stores the Lexographical order
+//              of the input strings.
+//----------------------------------------------------------------------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "List.h"
+
+#define MAX_LEN 1000
+
+int main(int argc, char* argv[]){
+  
+  FILE *fileIn, *fileOut;
+  char line[MAX_LEN];
+  
+  char  *myArr[MAX_LEN] = { NULL};
+  int i = 0;
+  int j = 0;
+  List myList = newList();
+  if ( argc != 3){
+    printf("Error: too few inputs\n");
+    exit(1);
+  }
+  
+  fileIn = fopen(argv[1], "r");
+  fileOut = fopen(argv[2], "w");
+
+  if( fileIn == NULL){
+    printf("Unable to open file %s for reading\n", argv[1]);
+    exit(1);
+  }
+  
+  if( fileOut == NULL){
+    printf("Unable to open file %s for writing\n", argv[2]);
+    exit(1);
+  }
+
+  while( fgets(line, sizeof(line), fileIn)){
+    size_t length = strlen(line);
+    if(line[length-1] == '\n'){
+      line[--length] = 0;
+    }
+    if(( myArr[i] =  malloc(length + 1 ))){
+      strcpy(myArr[i], line);
+    }
+
+    if( i == 0){
+      append(myList, i);
+    } else{
+      moveFront(myList);
+      for ( j = 0; j <= i; j++){
+	
+	if( strcmp(myArr[i], myArr[j]) <= 0 && j == 0 ){
+	  printf("prepended %s before %s\n", myArr[i], myArr[j]);
+	  prepend(myList, i);
+	  break;
+	  //} else if ( strcmp(myArr[i], myArr[j]) > 0 && (j+1) >= i ){
+	  //printf("appended %s after %s \n", myArr[i], myArr[j]);
+	  //append(myList, i);
+	  //break;
+	  
+	} else if ( strcmp(myArr[i], myArr[j]) < 0 && strcmp(myArr[i], myArr[j-1]) > 0 && j < i){
+	  printf("inserted %s before %s\n", myArr[i], myArr[j]);
+	  insertBefore(myList, i);
+	  break;
+	  } else if ( strcmp(myArr[i], myArr[j]) >= 0 && (j+1) >= i){
+	  append(myList, i);
+	  break;
+	}								 
+	
+	moveNext(myList);
+      }
+    }
+    i++;
+  }
+  moveFront(myList);
+  for(j = 0; j < (length(myList) ); j++ ){
+    fprintf(fileOut, "%s\n", myArr[get(myList)]);
+    moveNext(myList);
+  }
+  fclose(fileIn);
+  fclose(fileOut);
+  freeList(&myList);
+  for(j = 0; j <= i; j++){
+    free(myArr[j]);
+  }
+ 
+  return(0);
+}

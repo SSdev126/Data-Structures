@@ -1,0 +1,23 @@
+Shane Smith
+ssmith30
+Winter 2021
+pa 1: Lex List ADT
+
+--------------------------------------------
+DESCRIPTION
+
+For this assignment, we created a List ADT and a program Lex that uses the list to sort 
+lines from a input file into lexographical order.
+
+
+--------------------------------------------
+FILES
+
+-List.h
+-List.c
+-ListClient.c
+-Lex.c
+-Makefile
+-README
+
+
