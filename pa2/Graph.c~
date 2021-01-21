@@ -1,0 +1,138 @@
+//----------------------------------------------------------------------------
+// Created by : Smith, Shane
+//              ssmith30
+//              1/20/2021
+//
+//             Graph.c
+// Assignment: Pa2: Breadth first search
+//             CSE 101, Introduction to Data Structures and algorithms
+//             UC Santa Cruz, Winter 2021.
+//
+// Description:  Implementation file for Graph ADT
+//----------------------------------------------------------------------------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "Graph.h"
+#include "List.h"
+
+// structs-----------------------------------------------------------------
+
+// private GraphObj type
+typedef struct GraphObj{
+  List* L;
+  int* color;
+  int* parents;
+  int* distance;
+  int order;
+  int size;
+  int source;
+} GraphObj;
+
+// Constructors-Destructors-------------------------------------------------
+Graph newGraph(int n){
+  int sizeFixed = n+1;
+  int i;
+  Graph G = malloc(sizeof(GraphObj));
+  G->L = malloc((sizeFixed)*sizeof(List));
+  G->color = malloc(sizeFixed*sizeof(int));
+  G->parents = malloc(sizeFixed*sizeof(int));
+  G->distance = malloc(sizeFixed*sizeof(int));
+  G->order = n;
+  G->size = 0;
+  G->source = NIL;
+  for( i = 1; i <= sizeFixed; i++){
+    G->L[i] = newList();
+    G->color[i] = 0;
+    G->parents[i]= NIL;
+    G->distance[i] = NIL;
+  }
+  return(G);
+
+}
+
+void freeGraph(Graph* pG){
+  int i;
+  if(pG !=NULL && *pL!=NULL){
+    for( i = 0; i<= (G->order + 1); i++){
+      free(G->L[i]);
+      free(G->color[i]);
+      free(G->parents[i]);
+    }
+    G->size = 0;
+    G->source = 0;
+    G->order = 0;
+    free(*pG);
+    *pG = NULL;
+  }
+
+}
+
+// Access funtions-------------------------------------------------
+int getOrder(Graph G){
+  return(G->order);
+}
+
+int getSize(Graph G){
+  return(G->size);
+}
+int getSource(Graph G){
+  return(G->source)
+}
+int getParent(Graph G, int u){
+  if( u <= getOrder(G) && u >= 1){
+    return(G->parents[u]);
+  }else{
+    printf("Graph Error: getParent() called with invalid argument.\n");
+    exit(EXIT_FAILURE);
+  }
+}
+
+int getDist(Graph G, int u){
+  if( u <= getOrder(G) && u >= 1){
+    return(G->distance[u]);
+  }else{
+    printf("Graph Error: getDist() called with invalid argument.\n");
+    exit(EXIT_FAILURE);
+  }
+}
+
+void getPath(List L, Graph G, int u){
+  if( u < 1 || u > getOrder(G)){
+    printf("Graph Error: getPath() called on vertex outside of range.\n");
+    exit(EXIT_FAILUR);
+  }
+  if( getSoure(G) == NIL){
+    printf("Graph Error: getPath() called on before BFS was called on Graph.\n");
+    exit(EXIT_FAILURE);
+  }
+  if( getSource(G) == u){
+    appeand(L, getSource(G));
+  } else if ( G->parents[u] == NIL){
+    append(L, NIL);
+  } else {
+    getPath(L, G, G->parents[u]);
+    append(L,u);
+  }
+}
+
+
+// Manipulation procedures------------------------------------------------------
+void makeNull(Graph G){
+  int i;
+  int size = getOrder(G)+1;
+  G->size = 0;
+  G->source = NIL;
+  for( i = 1; i <= size; i++){
+    clear(G->L[i]);
+    G->color[i] = 0;
+    G->parents[i] = NIL;
+    G->distance[i] = NIL;
+  }
+  
+}
+
+void addEdge (Graph G, int u, int v){
+  
+  
+}
