@@ -1,22 +1,22 @@
 Shane Smith
 ssmith30
 Winter 2021
-pa 1: Lex List ADT
+pa 2: Breadth First Search and Single Source Shortest Path
 
 --------------------------------------------
 DESCRIPTION
 
-For this assignment, we created a List ADT and a program Lex that uses the list to sort 
-lines from a input file into lexographical order.
-
+For this assignment, we created a Graph ADT using our previous List ADT as a queue
+then used that to run Breadth First Search and Single Source Shortest Path algorithms.
 
 --------------------------------------------
 FILES
-
+-GraphTest.c
+-FindPath.c
+-Graph.h
+-Graph.c
 -List.h
 -List.c
--ListClient.c
--Lex.c
 -Makefile
 -README
 

@@ -2,32 +2,42 @@
 # Makefile for CSE 101 Programming Assignment 1
 #
 # make                   makes Lex
-# make ListClient        makes ListClient
+# make FindPath          makes FindPath
+# make GraphClient       makes GraphClient
 # make clean             removes all binaries
-# make checkClient       checks ListClient for memory errors
-# make checkLex          checks Lex for memory errors
+# make checkTest       checks GraphTest for memory errors
+# make checkPath          checks FindPath for memory errors
 #------------------------------------------------------------------------------
 
-Lex : Lex.o List.o
-	gcc -std=c11 -Wall -o Lex Lex.o List.o
+GraphTest : GraphTest.o Graph.o List.o
+	gcc -std=c11 -Wall -o GraphTest GraphTest.o Graph.o List.o
 
-Lex.o : Lex.c List.h
-	gcc -std=c11 -Wall -c Lex.c
+GraphTest.o : GraphTest.c Graph.h List.h
+	gcc -std=c11 -Wall -c GraphTest.c
 
-ListClient: ListClient.o List.o
-	gcc -std=c11 -Wall -o ListClient ListClient.o List.o
+FindPath : FindPath.o Graph.o List.o
+	gcc -std=c11 -Wall -o FindPath FindPath.o Graph.o List.o
 
-ListClient.o : ListClient.c List.h
-	gcc -std=c11 -Wall -c ListClient.c
+FindPath.o : FindPath.c Graph.h List.h
+	gcc -std=c11 -Wall -c FindPath.c
+
+GraphClient : GraphClient.o Graph.o List.o
+	gcc -std=c11 -Wall -o GraphClient GraphClient.o Graph.o List.o
+
+GraphClient.o : GraphClient.c Graph.h List.h
+	gcc -std=c11 -Wall -c GraphClient.c
+
+Graph.o : Graph.c Graph.h List.h
+	gcc -std=c11 -Wall -c Graph.c
 
 List.o : List.c List.h
 	gcc -std=c11 -Wall -c List.c
 
 clean :
-	rm -f Lex ListClient Lex.o ListClient.o List.o
+	rm -f FindPath GraphTest GraphClient GraphClient.o GraphTest.o FindPath.o Graph.o List.o
 
-checkClient : 
-	valgrind --leak-check=full ListClient
+checkTest : 
+	valgrind --leak-check=full --track-origins=yes GraphTest
 
-checkLex :
-	valgrind --leak-check=full Lex in3 blah3
+checkPath :
+	valgrind --leak-check=full --track-origins=yes FindPath in3 blah3
