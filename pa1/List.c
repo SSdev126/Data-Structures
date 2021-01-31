@@ -405,17 +405,14 @@ void delete(List L){
   }
   if( index(L) < 0){
     printf("List Error: called delete with undefined index.\n");
-    //exit(EXIT_FAILURE);
     return;
   }
   if( length(L) > 0){
     if( index(L) == 0){ // delete is being called on the front element
       deleteFront(L);
-      //exit(1);
       return;
     }else if( index(L) == (length(L)-1)) { // delete is being called on the back element
       deleteBack(L);
-      //exit(1);
       return;
     }else {
       Node N = NULL;
