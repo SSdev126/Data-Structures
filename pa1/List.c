@@ -190,7 +190,8 @@ void set(List L, int x){
 void moveFront(List L){
   if(length(L) <= 0){
     printf("List Error: calling moveFront on empty List\n");
-    exit(EXIT_FAILURE);
+    //exit(EXIT_FAILURE);
+    return;
   }
   L->cursor = L->front;
   L->index = 0;
@@ -313,6 +314,7 @@ void insertBefore(List L, int x){
     N->next = L->cursor;
     L->cursor->previous = N;
   }
+  
   L->length++;
 }
 
@@ -358,7 +360,7 @@ void deleteFront(List L){
   if(index(L) == 0){
     L->index = -1;
     L->cursor = NULL;
-  }
+  }else{L->index--;}
   if( length(L) > 1){
     L->front = L->front->next;
     L->front->previous = NULL;
@@ -399,18 +401,22 @@ void delete(List L){
   if( length(L) <=0){
     printf("List Error: calling delete on empty List.\n");
     exit(EXIT_FAILURE);
+    return;
   }
   if( index(L) < 0){
     printf("List Error: called delete with undefined index.\n");
-    exit(EXIT_FAILURE);
+    //exit(EXIT_FAILURE);
+    return;
   }
   if( length(L) > 0){
     if( index(L) == 0){ // delete is being called on the front element
       deleteFront(L);
-      exit(1);
+      //exit(1);
+      return;
     }else if( index(L) == (length(L)-1)) { // delete is being called on the back element
       deleteBack(L);
-      exit(1);
+      //exit(1);
+      return;
     }else {
       Node N = NULL;
       N = L->cursor;
