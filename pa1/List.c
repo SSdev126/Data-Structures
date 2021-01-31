@@ -401,7 +401,6 @@ void delete(List L){
   if( length(L) <=0){
     printf("List Error: calling delete on empty List.\n");
     exit(EXIT_FAILURE);
-    return;
   }
   if( index(L) < 0){
     printf("List Error: called delete with undefined index.\n");
