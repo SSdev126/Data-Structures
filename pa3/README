@@ -1,0 +1,23 @@
+Shane Smith
+ssmith30
+Winter 2021
+pa 3: Depth First Search
+
+--------------------------------------------
+DESCRIPTION
+
+For this assignment, we created a Graph ADT using our previous List ADT as a stack
+then used that to run Depth First Search and used it to locate strongly connected components.
+
+--------------------------------------------
+FILES
+-GraphTest.c
+-FindComponents.c
+-Graph.h
+-Graph.c
+-List.h
+-List.c
+-Makefile
+-README
+
+
