@@ -20,6 +20,9 @@ FILES
 -Makefile
 -README
 
+---------------------------------------------
+NOTES
+- I used the Graph.c and Graph.h from pa2 I modified them to make them fit the specs of pa3 
 
 NOTES
 --------------------------------------------
