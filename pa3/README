@@ -21,3 +21,6 @@ FILES
 -README
 
 
+NOTES
+--------------------------------------------
+I used the same Graph.h and Graph.c from pa2 and just motified it to fit the requirements of pa3 and the pa3 grading script.
