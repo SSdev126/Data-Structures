@@ -47,14 +47,28 @@ List::List( const List& L){
   afterCursor = backDummy;
   pos_cursor = 0;
   num_elements = 0;
-  
-  // load elements of L into this
-  Node* N = L.backDummy;
-  N = N->prev;
-  while( N->prev != nullptr ){
-    this->insertAfter(N->data);
-    N = N->prev;
+  if( L.num_elements != 0){
+    // load elements of L into this
+    Node* N = L.frontDummy;
+    N = N->next;
+    Node* M = new Node(N->data);
+    frontDummy->next = M;
+    M->prev = frontDummy;
+    afterCursor = M;
+    while( N->next != L.backDummy ){
+      N = N->next;
+      M->next = new Node(N->data);
+      M->next->prev = M;
+      M = M->next;
+      
+      //this->insertBefore(N->data);
+      //N = N->next;
+    }
+    M->next = backDummy;
+    backDummy->prev = M;
+    num_elements = L.num_elements;
   }
+  
 }
  
  
@@ -166,12 +180,12 @@ int List::movePrev(){
 void List::insertAfter(int x){
   Node* N = new Node(x);
   
-    afterCursor->prev = N;
-    N->next = afterCursor;
-    beforeCursor->next = N;
-    N->prev = beforeCursor;
-    afterCursor = N;
-    num_elements++;
+  afterCursor->prev = N;
+  N->next = afterCursor;
+  beforeCursor->next = N;
+  N->prev = beforeCursor;
+  afterCursor = N;
+  num_elements++;
 }
 
 // insertBefore()
@@ -314,6 +328,7 @@ void List::cleanup(){
 
 	tempSearch = tempSearch->next;
       }
+      searchPosition++;
     }
     //cout<< "made it out of second while loop\n";
     startPosition++;
@@ -329,9 +344,10 @@ void List::cleanup(){
 // clear()
 // Deletes all elements in this List, setting it to the empty state.
 void List::clear(){
-  moveFront();
+  this->moveFront();
+
   while( num_elements != 0){
-    eraseAfter();
+   this->eraseAfter();
   }
   
 }

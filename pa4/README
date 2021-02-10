@@ -1,0 +1,24 @@
+Shane Smith
+ssmith30
+Winter 2021
+pa 4: The perfect Shuffle
+
+--------------------------------------------
+DESCRIPTION
+
+ For this assignment, we created another doubly linked List ADT but this time we used C++
+ rather than C. We then used that List adt to create a client program that found how many
+ perfect shuffles it would take to get it back to its original state.
+
+--------------------------------------------
+FILES
+-ListTest.cpp
+-List.cpp
+-List.h
+-Shuffle.cpp
+-Makefile
+-README
+
+---------------------------------------------
+NOTES
+- 
