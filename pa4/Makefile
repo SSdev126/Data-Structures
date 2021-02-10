@@ -3,7 +3,7 @@
 #
 #  make                makes Shuffle
 #  make ListClient     makes ListClient
-#  make Test           makes ListTest
+#  make ListTest       makes ListTest
 #  make clean          removes binary files
 #  make check1         runs valgrind on ListClient
 #  make check2         runs valgrind on Shuffle with command line argument 35
