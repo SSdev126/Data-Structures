@@ -82,6 +82,7 @@ Dictionary newDictionary(int unique){
 void freeDictionary(Dictionary* pD){
   if(pD != NULL && *pD != NULL){
     makeEmpty(*pD);
+    freeNode(&((*pD)->NIL));
     free(*pD);
     *pD = NULL;
   }
@@ -236,6 +237,9 @@ void delete(Dictionary D, KEY_TYPE k){
   if( lookup(D, k) != VAL_UNDEF){
     Node temp = D->root;
       temp = TreeSearch( temp, k);
+      if (temp == D->cursor){
+	D->cursor = D->NIL;
+      }
     if ( temp->left == D->NIL){
       Transplant(D, temp, temp->right);
       freeNode(&temp);
@@ -265,6 +269,7 @@ void makeEmpty(Dictionary D){
   while( D->size != 0){
     delete(D, D->root->key);
   }
+  D->cursor = D->NIL;
 }
 
 // beginForward()

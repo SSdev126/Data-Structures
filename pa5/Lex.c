@@ -4,7 +4,7 @@
 //              
 //
 //              Lex.C
-// Assignment: Pa5: lex List
+// Assignment: Pa5: Lex tree
 //             CSE 101, Indroduction to Data Structures and algorithms
 //             UC Santa Cruz, Winter 2021.
 //
@@ -17,7 +17,7 @@
 #include <string.h>
 #include "Dictionary.h"
 
-#define MAX_LEN 1000
+#define MAX_LEN 200000
 
 int main(int argc, char* argv[]){
   
@@ -26,6 +26,7 @@ int main(int argc, char* argv[]){
   char *myArr[MAX_LEN] = {NULL};
   int j = 0;
   int i = 0;
+  
   Dictionary myDict = newDictionary(0);
   if ( argc != 3){
     printf("Error: too few inputs\n");
@@ -44,33 +45,37 @@ int main(int argc, char* argv[]){
     printf("Unable to open file %s for writing\n", argv[2]);
     exit(1);
   }
-
+  //int check = fgetc(fileIn);
+  // if ( check != EOF){
+    //   ungetc(check, fileIn);
+    
   while( fgets(line, sizeof(line), fileIn)){ // reading the file in until fgets fails
     size_t length = strlen(line);
     if(line[length-1] == '\n'){
       line[--length] = 0;
     }
     if(( myArr[i] = malloc(length + 1))){
-
-   
-    fprintf(stdout, "made it to strcpy and copying %s", line);
-    strcpy(myArr[i], line);
-    fprintf(stdout, "finished strcpy and copied\n" );
-    insert(myDict, myArr[i], j);
+	
+	
+	// fprintf(stdout, "made it to strcpy and copying %s", line);
+	strcpy(myArr[i], line);
+    // fprintf(stdout, "finished strcpy and copied\n" );
+	insert(myDict, myArr[i], j);
+      }
+      i++;
+      j++;
     }
-    i++;
-    j++;
-  }
   
-  for(j = beginForward(myDict); currentVal(myDict)!= VAL_UNDEF; j = next(myDict)){
-    fprintf(fileOut, ""KEY_FORMAT"\n", currentKey(myDict)); 
-  }
-  fclose(fileIn);                        // close our files
-  fclose(fileOut);
-  freeDictionary(&myDict);                     // free our lists allocated memory
-  for( j = 0; j <= i ; j++){
-    free(myArr[j]);
-  } 
- 
+    for(j = beginForward(myDict); currentVal(myDict)!= VAL_UNDEF; j = next(myDict)){
+      fprintf(fileOut, ""KEY_FORMAT"\n", currentKey(myDict)); 
+    }
+    
+    fclose(fileIn);
+    fclose(fileOut);
+    freeDictionary(&myDict);
+    for( j = 0; j <= i ; j++){
+      free(myArr[j]);
+    } 
+
   return(0);
 }

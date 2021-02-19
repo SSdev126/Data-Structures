@@ -3,15 +3,20 @@
 #
 #  make                     makes Lex
 #  make DictionaryClient    makes DictionaryClient
+#  make DictionaryTest      makes DictionaryTest
 #  make clean               removes all binaries
 #  make check1              checks DictionaryClient for memory leaks
 #  make check2              checks Lex for memory leaks on in4
+#  make check3              checks DictionaryTest for memory leaks
 #------------------------------------------------------------------------------
 
 TOP              = Lex
 TOP_OBJ          = $(TOP).o
 TOP_SRC          = $(TOP).c
 ADT              = Dictionary
+TEMP             = $(ADT)Test
+TEMP_OBJ         = $(TEMP).o
+TEMP_SRC         = $(TEMP).c
 TEST             = $(ADT)Client
 TEST_OBJ         = $(TEST).o
 TEST_SRC         = $(TEST).c
@@ -29,8 +34,14 @@ $(TOP) : $(TOP_OBJ) $(ADT_OBJ)
 $(TEST) : $(TEST_OBJ) $(ADT_OBJ)
 	$(LINK) $(TEST) $(TEST_OBJ) $(ADT_OBJ)
 
+$(TEMP) : $(TEMP_OBJ) $(ADT_OBJ)
+	$(LINK) $(TEMP) $(TEMP_OBJ) $(ADT_OBJ)
+
 $(TOP_OBJ) : $(TOP_SRC) $(ADT_HDR)
 	$(COMPILE) $(TOP_SRC)
+
+$(TEMP_OBJ) : $(TEMP_SRC) $(ADT_HDR)
+	$(COMPILE) $(TEMP_SRC)
 
 $(TEST_OBJ) : $(TEST_SRC) $(ADT_HDR)
 	$(COMPILE) $(TEST_SRC)
@@ -47,3 +58,5 @@ check1 : $(TEST)
 check2 : $(TOP)
 	$(MEMCHECK) $(TOP) in4 junk4
 
+check3 : $(TEMP)
+	$(MEMCHECK) $(TEMP)
