@@ -3,6 +3,7 @@
 #
 #  make                  makes Order
 #  make WordFrequency    makes WordFrequency
+#  make DictionaryTest   makes DictionaryTest
 #  make clean            removes all binaries
 #  make check1           checks WordFrequency for memory leaks on Big.txt 
 #  make check2           checks Order for memory leaks on English.txt
@@ -12,12 +13,12 @@ TOP              = Order
 TOP_OBJ          = $(TOP).o
 TOP_SRC          = $(TOP).c
 ADT              = Dictionary
+TEMP             = $(ADT)Test
+TEMP_OBJ         = $(TEMP).o
+TEMP_SRC         = $(TEMP).c
 TEST             = WordFrequency
 TEST_OBJ         = $(TEST).o
 TEST_SRC         = $(TEST).c
-TEMP             = $(ADT)test
-TEMP_OBJ         = $(TEMP).o
-TEMP_SRC         = $(TEMP).c
 ADT_OBJ          = $(ADT).o
 ADT_SRC          = $(ADT).c
 ADT_HDR          = $(ADT).h
@@ -38,11 +39,11 @@ $(TEMP) : $(TEMP_OBJ) $(ADT_OBJ)
 $(TOP_OBJ) : $(TOP_SRC) $(ADT_HDR)
 	$(COMPILE) $(TOP_SRC)
 
-$(TEST_OBJ) : $(TEST_SRC) $(ADT_HDR)
-	$(COMPILE) $(TEST_SRC)
-
 $(TEMP_OBJ) : $(TEMP_SRC) $(ADT_HDR)
 	$(COMPILE) $(TEMP_SRC)
+
+$(TEST_OBJ) : $(TEST_SRC) $(ADT_HDR)
+	$(COMPILE) $(TEST_SRC)
 
 $(ADT_OBJ) : $(ADT_SRC) $(ADT_HDR)
 	$(COMPILE) $(ADT_SRC)

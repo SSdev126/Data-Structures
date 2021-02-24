@@ -26,7 +26,7 @@ int main(int argc, char* argv[]){
   int totalLines = 0;
   int j = 0;
   int i = 0;
-
+  int *k = 0;
   Dictionary myDict = newDictionary(0);
   if ( argc != 3){
     printf("Error: too few inputs\n");
@@ -50,7 +50,7 @@ int main(int argc, char* argv[]){
     totalLines++;
   }
   
-  char *myArr[totalLines] = {NULL};
+  char *myArr[totalLines];
   rewind(fileIn);
 
   while( fgets(line, sizeof(line), fileIn)){ // reading the file in until fgets fails
@@ -60,14 +60,11 @@ int main(int argc, char* argv[]){
     }
     if(( myArr[i] = malloc(length + 1))){
 
-
-      // fprintf(stdout, "made it to strcpy and copying %s", line);
       strcpy(myArr[i], line);
-      // fprintf(stdout, "finished strcpy and copied\n" );
-      insert(myDict, myArr[i], j);
+      insert(myDict, myArr[i], k);
+      i++;
+      k++;
     }
-    i++;
-    j++;
   }
 
   printDictionary(fileOut, myDict, "pre");
@@ -77,8 +74,9 @@ int main(int argc, char* argv[]){
   fclose(fileIn);
   fclose(fileOut);
   freeDictionary(&myDict);
-  for( j = 0; j <= i ; j++){
+  for( j = 0; j < i ; j++){
     free(myArr[j]);
   }
 
   return(0);
+}

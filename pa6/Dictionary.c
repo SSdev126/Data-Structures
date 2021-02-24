@@ -50,7 +50,7 @@ Node newNode( KEY_TYPE key, VAL_TYPE data){
   N->parent = N->left = N->right = NULL;
   N->key = key;
   N->data = data;
-  N->color = -1;
+  N->color = 0;
   return(N);
 
 }
@@ -75,7 +75,6 @@ Dictionary newDictionary(int unique){
   D = malloc(sizeof(DictionaryObj));
   D->NIL = newNode(KEY_UNDEF, VAL_UNDEF);
   D->root = D->NIL;
-  D->NIL->color = 0;
   D->cursor = D->NIL;
   D->unique = unique;
   D->size = 0;
@@ -84,11 +83,18 @@ Dictionary newDictionary(int unique){
 
 // PostOrderDelete
 // helper function for freeDictionary
-void PostOrderDelete( Node x){
-  if ( x->key != KEY_UNDEF){
-    PostOrderDelete( x->left);
-    PostOrderDelete( x->right);
-    free(x);
+void PostOrderDelete(Dictionary D, Node x){
+  if ( x != D->NIL && D->size != 0){
+    //if(x->left !=  D->NIL){
+      PostOrderDelete( D, x->left);
+      //}
+    //if(x->right != D->NIL){
+      PostOrderDelete( D, x->right);
+      //}
+
+    freeNode(&x);
+    D->size--;
+    x = NULL;
   }
 }
 
@@ -96,7 +102,7 @@ void PostOrderDelete( Node x){
 // Frees heap memory associated with *pD, sets *pD to NULL.
 void freeDictionary(Dictionary* pD){
   if(pD != NULL && *pD != NULL){
-    PostOrderDelete((*pD)->root);
+    PostOrderDelete(*pD, (*pD)->root);
     freeNode(&((*pD)->NIL));
     free(*pD);
     *pD = NULL;
@@ -163,7 +169,7 @@ VAL_TYPE lookup(Dictionary D, KEY_TYPE k){
     Node temp = D->root;
     //fprintf(stdout, "made it to TreeSearch\n");
     temp = TreeSearch( temp, k);
-    // fprintf(stdout, "about to leave lookup\n");
+    //fprintf(stdout, "about to leave lookup\n");
     return temp->data;
   } else {
     printf("Dictionary Error: calling lookup() on NULL reference.\n");
@@ -326,64 +332,77 @@ void Transplant( Dictionary D, Node u , Node v){
   }else{
     u->parent->right = v;
   }
-  if( v != D->NIL){
-    v->parent = u->parent;
-  }
+  v->parent = u->parent;
+  
 }
 
 // deleteFixUp()
 // helper function for delete that helps maintain RBT rules.
 void deleteFixUp(Dictionary D, Node x){
+  //printf( "made it to deleteFixUp\n");
   while( x != D->root && x->color == 0){
-    if ( x == x->parent->left){
-      Node temp = x->parent->right;
-      if( temp->color == 1){
-	temp->color = 0;
-	x->parent->color = 1;
-	rotateLeft(D, x->parent);
-	temp = x->parent->right;
-      }
-      if ( temp->left->color == 0 && temp->right->color == 0){
-	temp->color = 1;
-	x = x->parent;
-      }else {
-	if ( temp->right->color == 0){
-	  temp->left->color = 0;
-	  temp->color = 1;
-	  rotateRight(D, temp);
-	  temp = x->parent->right;
+    //printf("checking keys\n");
+    //printf(""KEY_FORMAT"\n", x->parent->key);
+    //printf(""KEY_FORMAT"\n", x->parent->left->key);
+    //printf( "about to check x->parent->left\n");
+    if ( x->parent->left != NULL){
+      //printf( "about to check x->parent->left\n");
+      if ( x == x->parent->left){
+	//printf( "before if temp\n");
+	Node temp = x->parent->right;
+	if( temp != D->NIL){
+	  if( temp->color == 1){
+	    temp->color = 0;
+	    x->parent->color = 1;
+	    rotateLeft(D, x->parent);
+	    temp = x->parent->right;
+	  }
+	  if ( temp->left->color == 0 && temp->right->color == 0){
+	    temp->color = 1;
+	    x = x->parent;
+	  }else {
+	    if ( temp->right->color == 0){
+	      temp->left->color = 0;
+	      temp->color = 1;
+	      rotateRight(D, temp);
+	      temp = x->parent->right;
+	    }
+	    temp->color = x->parent->color;
+	    x->parent->color = 0;
+	    temp->right->color = 0;
+	    rotateLeft(D, x->parent);
+	    x = D->root;
+	  }
 	}
-	temp->color = x->parent->color;
-	x->parent->color = 0;
-	temp->right->color = 0;
-	rotateLeft(D, x->parent);
-	x = D->root;
       }
     }else{
+      //printf("before else temp\n");
       Node temp = x->parent->left;
-      if ( temp->color == 1){
-	temp->color = 0;
-	x->parent->color = 1;
-	rotateRight(D, x->parent);
-	temp = x->parent->left;
-      }
-      if ( temp->right->color == 0 && temp->left->color == 0){
-	temp->color = 1;
-	x = x->parent;
-      } else{
-	if ( temp->left->color == 0 ){
-	  temp->right->color = 0;
-	  temp->color = 1;
-	  rotateLeft(D, temp);
+      if ( temp != D->NIL){
+	if ( temp->color == 1){
+	  temp->color = 0;
+	  x->parent->color = 1;
+	  rotateRight(D, x->parent);
 	  temp = x->parent->left;
 	}
-	temp->color = x->parent->color;
-	x->parent->color = 0;
-	temp->left->color = 0;
-	rotateRight(D, x->parent);
-	x = D->root;
+	if ( temp->right->color == 0 && temp->left->color == 0){
+	  temp->color = 1;
+	  x = x->parent;
+	} else{
+	  if ( temp->left->color == 0 ){
+	    temp->right->color = 0;
+	    temp->color = 1;
+	    rotateLeft(D, temp);
+	    temp = x->parent->left;
+	  }
+	  temp->color = x->parent->color;
+	  x->parent->color = 0;
+	  temp->left->color = 0;
+	  rotateRight(D, x->parent);
+	  x = D->root;
+	}
       }
-    } 
+    }
   }
   x->color = 0;
 }
@@ -392,6 +411,7 @@ void deleteFixUp(Dictionary D, Node x){
 // Remove the pair whose key is k from Dictionary D.
 // Pre: lookup(D,k) != VAL_UNDEF (i.e. D contains a pair whose key is k.)
 void delete(Dictionary D, KEY_TYPE k){
+  //printf("made it into delete\n");
   if( lookup(D, k) != VAL_UNDEF){
     Node temp = D->root;
     Node x;
@@ -403,11 +423,11 @@ void delete(Dictionary D, KEY_TYPE k){
     if ( temp->left == D->NIL){
       x = temp->right;
       Transplant(D, temp, temp->right);
-      freeNode(&temp);
+      //freeNode(&temp);
     }else if (temp->right == D->NIL){
       x = temp->right;
       Transplant(D, temp, temp->left);
-      freeNode(&temp);
+      //freeNode(&temp);
     }else {
       Node y = temp->right;
       y = TreeMinimum(y);
@@ -424,21 +444,25 @@ void delete(Dictionary D, KEY_TYPE k){
       y->left = temp->left;
       y->left->parent = y;
       y->color = temp->color;
-      freeNode(&temp);
+      //freeNode(&temp);
     }
-    D->size--;
     if( originalColor == 0){
+      //printf("goint into deletefixup\n");
       deleteFixUp(D, x);
     }
+    freeNode(&temp);
+    D->size--;
   }
 }
 
 // makeEmpty()
 // Reset Dictionary D to the empty state, containing no pairs
 void makeEmpty(Dictionary D){
-  PostOrderDelete(D->root);
-  D->size = 0;
-  D->cursor = D->NIL;
+  if(D->size != 0){
+    PostOrderDelete(D ,D->root);
+    D->size = 0;
+    D->cursor = D->NIL;
+  }
 }
 
 // beginForward()
