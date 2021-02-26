@@ -576,31 +576,42 @@ VAL_TYPE prev(Dictionary D){
 
 // other operations
 
-void InOrderTreeWalk(FILE* fileOut,Node x){
+void InOrderTreeWalk(FILE* fileOut, Dictionary D, Node x){
   if ( fileOut == NULL) { return;}
   if ( x->key != KEY_UNDEF){
-    InOrderTreeWalk( fileOut, x->left);
+    if( x->left != D->NIL){
+      InOrderTreeWalk( fileOut, D, x->left);
+    }
     fprintf( fileOut, ""KEY_FORMAT"\n", x->key);
-    InOrderTreeWalk( fileOut, x->right);
-
+    if( x->right != D->NIL){
+      InOrderTreeWalk( fileOut, D, x->right);
+    }
   }
 
 }
 
-void PreOrderTreeWalk(FILE* fileOut, Node x){
+void PreOrderTreeWalk(FILE* fileOut, Dictionary D , Node x){
   if ( fileOut == NULL){ return;}
-  if ( x->key != KEY_UNDEF){
+  if ( x != D->NIL ){
     fprintf( fileOut, ""KEY_FORMAT"\n", x->key);
-    PreOrderTreeWalk( fileOut, x->left);
-    PreOrderTreeWalk( fileOut, x->right);
+    if( x->left != D->NIL){
+      PreOrderTreeWalk( fileOut, D , x->left);
+    }
+    if( x->right != D->NIL){
+      PreOrderTreeWalk( fileOut, D , x->right);
+    }
   }
 }
 
-void PostOrderTreeWalk(FILE* fileOut, Node x){
+void PostOrderTreeWalk(FILE* fileOut, Dictionary D , Node x){
   if ( fileOut == NULL){ return;}
   if ( x->key != KEY_UNDEF){
-    PostOrderTreeWalk(fileOut, x->left);
-    PostOrderTreeWalk(fileOut, x->right);
+    if(x->left != D->NIL){
+      PostOrderTreeWalk(fileOut,D , x->left);
+    }
+    if(x->right != D->NIL){
+      PostOrderTreeWalk(fileOut,D , x->right);
+    }
     fprintf( fileOut, ""KEY_FORMAT"\n", x->key);
   }
 }
@@ -617,15 +628,15 @@ void printDictionary(FILE* out, Dictionary D, const char* ord){
     if(test < 0 ){
       fprintf(out, "******************************************************\n");
       fprintf(out, "IN-ORDER:\n******************************************************\n");
-      InOrderTreeWalk(out, temp);
+      InOrderTreeWalk(out, D , temp);
     }else if( test > 0 ){
       fprintf(out, "******************************************************\n");
       fprintf(out, "PRE-ORDER:\n******************************************************\n");
-      PreOrderTreeWalk(out, temp);
+      PreOrderTreeWalk(out, D, temp);
     }else if( test == 0){
       fprintf(out, "******************************************************\n");
       fprintf(out, "POST-ORDER:\n******************************************************\n");
-      PostOrderTreeWalk(out, temp);
+      PostOrderTreeWalk(out, D, temp);
     }
   }
 }

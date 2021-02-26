@@ -1,0 +1,31 @@
+Shane Smith
+ssmith30
+Winter 2021
+pa 6: RB tree
+
+--------------------------------------------
+DESCRIPTION
+
+ For this assignment we created a RB tree ADT 
+ and used it count the frequency of a word in
+ a text file and to store and organize all the 
+ words in another text file
+ 
+
+--------------------------------------------
+FILES
+-DictionaryTest.c
+-Dictionary.c
+-Dictionary.h
+-Order.c
+-Makefile
+-README
+
+---------------------------------------------
+NOTES
+- I've been consistently passing all the test
+  in the grading script, but a few
+  times during when the timeshare was under a heavier
+  load my program would fail Order test 5 and frequency
+  test 3. going post on piazza and continuing researching it but
+  I am not confident this inconsisent bug will be fixed in time.
