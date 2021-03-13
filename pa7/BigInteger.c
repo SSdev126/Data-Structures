@@ -18,6 +18,7 @@
 #include <math.h>
 #include "BigInteger.h"
 #include "List.h"
+#define POWER  9
 
 // Structs
 typedef struct BigIntegerObj{
@@ -66,6 +67,7 @@ int sign(BigInteger N){
 int compare(BigInteger A, BigInteger B){
   
   if( A->sign == B->sign){
+    if(A->sign == 0){ return 0;}
     if(length(A->ints) > length(B->ints)){
       return 1;
     }else if(length(A->ints) < length(B->ints)){
@@ -77,18 +79,31 @@ int compare(BigInteger A, BigInteger B){
   }else if( A->sign > B->sign){
     return 1;
   }else{
-    moveFront(A->ints);
+    if(length(A->ints) !=0){
+      moveFront(A->ints);
+    }
+    if(length(B->ints) != 0){
     moveFront(B->ints);
+    }
     int a, b;
-    while(index(A->ints) != length(A->ints) && index(B->ints) != length(B->ints)){
+    while(index(A->ints) != length(A->ints) && index(B->ints) != length(B->ints) 
+	  && index(A->ints) != -1 && index(B->ints) != -1){
       a = get(A->ints);
       b = get(B->ints);
       moveNext(A->ints);
       moveNext(B->ints);
       if( a > b){
-	return 1;
+	if( A->sign != -1){
+	  return 1;
+	}else{
+	  return -1;
+	}
       }else if ( a < b){
-	return -1;
+	if( B->sign != -1){
+	  return -1;
+	} else{
+	  return 1;
+	}
       }
     }
     return 0;
@@ -98,7 +113,12 @@ int compare(BigInteger A, BigInteger B){
 // equals()
 // Returns true (1) if A and B are equals, false (0) otherwise.
 int equals(BigInteger A, BigInteger B){
-  return ListEquals(A->ints, B->ints);
+  //printf(" A sign: %d B sign: %d \n", A->sign, B->sign);
+  if(A->sign != B->sign){
+    return 0;
+  }else{
+    return ListEquals(A->ints, B->ints);
+  }
 }
 
 
@@ -134,62 +154,64 @@ void carry(List L, int x){
   }
   moveNext(L);
 }
+void removeZeroes(List L){
+  if(length(L) > 0){
+
+    moveFront(L);
+    while(front(L) == 0){
+      deleteFront(L);
+      if(length(L) > 0){
+        moveFront(L);
+      }
+    }
+  }   
+}
 
 int normalize(List L){
-  //printf( "made it to normalize\n");
-  //printList(stdout,L);
-  //printf("\n");
-  int tempIndex = index(L);
+  int oldIndex, tempIndex = index(L);
+  oldIndex = tempIndex;
   moveBack(L);
   int newSign = 1;
   long div;
-  //long mod;
-  long base = pow(10, 9);
+  long base = pow(10, POWER);
   while(index(L) != -1){
     if( index(L) != -1 && get(L) >= base){
-      //while( get(L) >= base){
+
         if(index(L) == 0 ){
 	  div = get(L) / base;
-	  //printf("div: %ld\n", div);
-	  //mod = get(L) % base;
           prepend(L, div);
           tempIndex++;
-	  //set(L, mod);
           set(L, (get(L) - (div*base)));
         }else{
 	  div = get(L) / base;
-	  //mod = get(L) % base;
-	  //printf("%ld / %ld", get(L), base);
-	  //printf("div: %ld\n", div);
           carry(L, div);
-	  //set(L, mod);
           set(L, (get(L) - (div*base)));
         }
-	//}
+
     }else if(index(L) != -1 && get(L) < 0){
+
       while( get(L) < 0){
+
         if( index(L) == 0){
+
           while(index(L) != -1){
-	    //printf("%ld\n", get(L));
+
             set(L, (get(L)*-1));
             moveNext(L);
           }
-	  //printf(" called second normalize\n");
+
           newSign = normalize(L);
           return -1;
-	  //break;
+
         }else {
 	  div = get(L) / base;
-	  //printf("div: %ld\n", div);
-          //mod = get(L) % base;
-	  //printf("mod: %ld\n", mod);
+
 	  if( div == 0){
+
 	    carry(L, -1);
 	    set(L, (get(L) + base));
 	  }else{
-	  //printf("div: %d\n", div);
 	    carry(L, div);
-	  //set(L, mod);
 	    set(L,  (get(L) + (div*base)));
 	  }
         }
@@ -198,16 +220,32 @@ int normalize(List L){
     movePrev(L);
   }
   moveFront(L);
-  //while(get(L) == 0){
-  //deleteFront(L);
-  //if(length(L) != 0){
-  //  moveFront(L);
+  if(length(L) > 0){
+    //printf("tempIndex: %d\n", tempIndex);
+  //moveFront(L)
+  //if(front(L) == 0){
+    while(get(L) == 0){
+      deleteFront(L);
+      if(oldIndex < tempIndex){
+      tempIndex--;
+      }
+      if(length(L) > 0){
+	moveFront(L);
+      }
+    }
+  }
   //}
-  //}
-  while(index(L) != tempIndex){ moveNext(L);}
+  if(length(L) >0 ){
+    while(index(L) != tempIndex){ 
+      
+      moveNext(L);
+    }
+  }
+  //printf("index at end of normalize: %d\n", index(L));
   if(length(L) == 0){
     newSign = 0;
   }
+  //}
   //printList(stdout, L);
   //printf("\n");
   return newSign;
@@ -224,17 +262,19 @@ int normalize(List L){
 BigInteger stringToBigInteger(char* s){
   int i = 0, j = 0;
   LIST_ELEMENT temp = 0;
-  int base = 9;
+  int base = POWER;
   //printf("%s\n", s);
   char *tempStr = s;
   char tempChar;
-  //printf("%s\n", tempStr);
+  
+  //printf(" in to string :%s\n", tempStr);
   int sign = 0, signCheck = 0;
-  for(i = 0; i < strlen(s); i++){
+  for(i = 0; i < strlen(s)-1; i++){
     if( i == 0){
       if( isdigit(*tempStr) == 0){
 	if(*tempStr != '+' && *tempStr != '-'){
-	  printf("Invalid input\n");
+	  //printf("invalid input was %s\n", tempStr);
+	   printf("Invalid input\n");
 	  exit(EXIT_FAILURE);
 	}else if(*tempStr == '-'){
 	  
@@ -245,6 +285,7 @@ BigInteger stringToBigInteger(char* s){
       }
     }else{
       if( isdigit(*tempStr) == 0){
+	printf("invalid input was %s\n", tempStr);
 	printf("Invalid input\n");
 	exit(EXIT_FAILURE);
       }
@@ -252,6 +293,7 @@ BigInteger stringToBigInteger(char* s){
     tempStr++;
   }
   tempStr = s;
+  //printf("atoi of temStr: %ld\n", temp);
   BigInteger B = newBigInteger();
   if ( sign != 0 ){
     tempStr++;
@@ -260,21 +302,18 @@ BigInteger stringToBigInteger(char* s){
   }else {
     B->sign = 1;
   }
-  for( i = (strlen(s)-1 - signCheck) ; i > signCheck ; ){
+  for( i = (strlen(s)- 1 - signCheck) ; i > signCheck ; ){
     
     if( (i - (base )) >  signCheck){
       temp = 0;
       for( j = 0; j < base; j++){ 
 	tempChar = tempStr[i];
-	//printf("%d\n", j);
-	//printf("%f\n", pow(10,j));
-	//printf("%c\n", tempChar);
 	temp += ( atoi(&tempChar) *pow(10, j));
 	//tempStr++;
 	//printf("%c\n", tempChar);
 	i--;
       }
-      //fprintf(stdout, "%ld\n", temp);
+      //fprintf(stdout, "temps%ld\n", temp);
       prepend(B->ints, temp); 
     }else{
       temp = 0;
@@ -289,11 +328,11 @@ BigInteger stringToBigInteger(char* s){
 	//tempStr++;
 	//printf("%c\n", tempChar);
       }
-      //fprintf(stdout, "%ld\n", temp);
+      //fprintf(stdout, "temps:%ld\n", temp);
       prepend(B->ints, temp);
     }
   }
-  //printBigInteger(stdout, B);
+  printBigInteger(stdout, B);
   sign = normalize(B->ints);
   return B;
 }
@@ -332,6 +371,8 @@ void addition( BigInteger S, BigInteger A, BigInteger B){
     //printf("%ld\n", tempListElement);
     prepend(S->ints, tempListElement);
   }
+  S->sign = A->sign;
+  removeZeroes(S->ints);
 }
 
 void sub( BigInteger D, BigInteger A, BigInteger B){
@@ -353,22 +394,21 @@ void sub( BigInteger D, BigInteger A, BigInteger B){
     prepend(D->ints , tempListElement);
   }
   
-
+  removeZeroes(D->ints);
 }
 
 // add()
 // Places the sum of A and B into the existing BigInteger S, overwriting its
 // current state: S = A + B
 void add(BigInteger S, BigInteger A, BigInteger B){
-   
   BigInteger tempA = copy(A), tempB = copy(B);
   moveBack(tempA->ints);
   moveBack(tempB->ints);
   makeZero(S);
   if( tempA->sign == tempB->sign || tempA->sign == 0 || tempB->sign == 0){
     addition( S, tempA, tempB);
-    //printBigInteger(stdout, S);
-    S->sign = normalize(S->ints);
+    
+    normalize(S->ints);
   }else if( tempA->sign == -1){
     sub( S, tempB , tempA);
     S->sign = normalize(S->ints);
@@ -378,7 +418,6 @@ void add(BigInteger S, BigInteger A, BigInteger B){
   }
   freeBigInteger(&tempA);
   freeBigInteger(&tempB);
-  //printBigInteger(stdout, S);
 }
 
 // sum()
@@ -391,7 +430,7 @@ BigInteger sum(BigInteger A, BigInteger B){
   moveBack(B->ints);
   if( A->sign == B->sign || A->sign == 0 || B->sign == 0){
     addition( S, A, B);
-    S->sign = normalize(S->ints);
+    normalize(S->ints);
   }else if( A->sign == -1){
     sub( S, B , A);
     S->sign = normalize(S->ints);
@@ -410,15 +449,14 @@ void subtract(BigInteger D, BigInteger A, BigInteger B){
   moveBack(tempA->ints);
   moveBack(tempB->ints);
   makeZero(D);
+  
   if( tempA->sign == tempB->sign || (tempA->sign == 0 && tempB->sign != -1) || tempB->sign == 0){
-
     sub(D, tempA, tempB);
     D->sign = normalize(D->ints);
-    
-
   }else{
     addition( D, tempA, tempB);
-    D->sign = normalize(D->ints);
+    normalize(D->ints);
+    D->sign = A->sign;
   }
   freeBigInteger(&tempA);
   freeBigInteger(&tempB);
@@ -430,28 +468,17 @@ BigInteger diff( BigInteger A, BigInteger B){
   BigInteger S = newBigInteger();
   moveBack(A->ints);
   moveBack(B->ints);
-  //printf("made it to diff \n");
+  int temp = compare(A, B);
   if( A->sign == B->sign || (A->sign == 0 && B->sign != -1) || B->sign == 0){
-    //printf(" A sign: %d B sign: %d\n", A->sign, B->sign);
     sub(S, A, B);
-    //printf("sub preNormalize value:");
-    //printList(stdout, S->ints);
-    // printf("\n");
-    S->sign = normalize(S->ints);
-    //printf("sub postNormalize value:");
-    //printList(stdout, S->ints);
-    //printf("\n");
-
     
+    normalize(S->ints);
+    S->sign = temp;
+      
   }else{
     addition( S, A, B);
-    //printf("preNormalize add value:");
-    //printList(stdout, S->ints);
-    //printf("\n");
     normalize(S->ints);
-    //printf("postNormalize add value:");
-    //printList(stdout, S->ints);
-    //printf("\n");
+    S->sign = A->sign;
   }
   return S;
 }
@@ -461,60 +488,94 @@ BigInteger diff( BigInteger A, BigInteger B){
 void multi(BigInteger P, BigInteger A, BigInteger B){
   long tempListElement = 0;
   //long test;
-  int firstPass = 0, sign = 1, pass = 0, i;
+  int firstPass = 0, sign = 1, i;
+  //int growth = 0, preNormalizeLength, pass = 0;
   
   moveBack(A->ints);
   moveBack(B->ints);
   if(A->sign != B->sign){
     sign = -1;
   }
-  while(index(A->ints) != -1){
-    while(index(B->ints) != -1){
+  //firstPass++;
+  //for(i = length(A->ints)*length(B->ints); i >= 0; i--){
+  //  prepend(P->ints, 0);
+  //}
+  moveBack(P->ints);
+  if( A->sign != 0 && B->sign != 0){
+    while(index(A->ints) != -1){
+      if(get(A->ints) != 0){
+	while(index(B->ints) != -1){
+	  //printf("broke at A*B get\n");
+	  tempListElement = (get(A->ints)) * get(B->ints);
+	  //printf(" multi results: %ld x %ld = %ld\n", get(A->ints), get(B->ints), tempListElement);
+	  if( firstPass == 0){
+	    
+	  prepend(P->ints, tempListElement); 
+	  firstPass++;
+	  //printBigInteger(stdout, P);
+	  normalize(P->ints);
+	  //printBigInteger(stdout, P);
+	  movePrev(B->ints);
+	  
+	  }else{
+	  set(P->ints, (get(P->ints) + tempListElement));
+	  //printBigInteger(stdout, P);
+	  normalize(P->ints);
+	  //printBigInteger(stdout, P);
+	  //printf("post normalize index: %d post normalize length: %d\n", index(P->ints));
+	  movePrev(B->ints);
+	  //if(preNormalizeLength < length(P->ints)){
+	  //  growth = 1;
+	  // }else{
+	  //  growth = 0;
+	  //}
+	  if(index(P->ints) == 0  && index(B->ints) != -1){
+	  //  for(i = 0; i <= index(B->ints)+1; i++){
+	     prepend(P->ints, 0);
+	  //    printf("made it to prepend loop\n\n");
+	  
+	  }
+	  //}
+	 
+	  movePrev(P->ints);
+	  // printf("inloop P index:%d P length: %d B index: %d\n", index(P->ints), length(P->ints), index(B->ints));
+	  }
+	}
+      }
       
-      tempListElement = (get(A->ints)) * get(B->ints);
-      //printf(" multi results: %ld x %ld = %ld\n", get(A->ints), get(B->ints), tempListElement);
-      if( firstPass == 0){
-	
-	//test = tempListElement;
-	//printf("%ld\n", test);
-	prepend(P->ints, tempListElement);
-	firstPass++;
-	//printf("pre normalize multi:");
-        //printList(stdout, P->ints);
-        //printf("\n");
-	
-	normalize(P->ints);
-	movePrev(B->ints);
-	//printf("multi:");
-	//printList(stdout, P->ints);
-	//printf("\n");
-	
-      }else{
-        
-	set(P->ints, (get(P->ints) + tempListElement));
-	//printf("pre normalize multi:");
-        //printList(stdout, P->ints);
-        //printf("\n");
-
-	normalize(P->ints);
-	//printf("steps:");
-	//printList(stdout, P->ints);
-	//printf("\n");
-	movePrev(B->ints);
-	movePrev(P->ints);
-	
+      //printf(" while loop: %d\n", (length(A->ints) -1 - index(A->ints)));
+      moveBack(P->ints);
+      moveBack(B->ints);
+      movePrev(A->ints);
+      // printf("A index: %d A length: %d\n", index(A->ints), length(A->ints));
+      //printf("B index: %d B length: %d\n", index(B->ints), length(B->ints));
+      //printf("P index: %d P length: %d\n", index(P->ints), length(P->ints));
+      
+      if( index(A->ints) != -1){
+	//printf("P index: %d\n", index(P->ints));
+	for( i = 0; i < length(A->ints)- 1 - index(A->ints); i++){ 
+	  movePrev(P->ints);
+	}
+	//if(index(P->ints) - length(B->ints) <= 0){
+	  //for(i = length(B->ints); i >=0; i--){
+	    //prepend(P->ints, 0);
+	    // }
+	  //}
+	//printf("B length: %d\nP index: %d\n", length(B->ints), index(P->ints));
+	//while( index(P->ints) < length(B->ints)){
+	//  prepend(P->ints, 0);
+	  // printf("P length: %d \n", length(P->ints));  
+	//}
+	//printf("post length loop P index: %d\n", index(P->ints));
       }
     }
-    //printf("working block: %d", pass);
-    pass++;
-    moveBack(P->ints);
-    moveBack(B->ints);
-    movePrev(A->ints);
-    for( i = pass; i > 0; i--){ movePrev(P->ints);}
-    
+  } else{ 
+    makeZero(P);
   }
-  P->sign = sign;
-
+  if(A->sign != 0 && B->sign != 0){
+    P->sign = sign;
+  }
+  removeZeroes(P->ints);
 }
 
 
@@ -530,7 +591,15 @@ void multiply(BigInteger P, BigInteger A, BigInteger B){
   multi( P, tempA, tempB);
   //printf("finished multi \n");
   //P->sign = normalize(P->ints);
-  
+  if(sign(A) != sign(B)){
+    if(sign(A) == 0 || sign(B) == 0){
+      P->sign = 0;
+    } else {
+      P->sign = -1;
+    }
+  }else{
+    P->sign = 1;
+  }
   freeBigInteger(&tempA);
   freeBigInteger(&tempB);
   
@@ -545,6 +614,18 @@ BigInteger prod( BigInteger A, BigInteger B){
   multi(P, A, B);
   //printf("finished multi \n");
   //P->sign = normalize(P->ints);
+  
+  if(sign(A) != sign(B)){
+    if(sign(A) == 0 || sign(B) == 0){
+      P->sign = 0;
+    } else {
+      P->sign = -1;
+    }
+  }else{
+    P->sign = 1;
+  }
+
+
   return P;
 
 }

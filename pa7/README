@@ -1,0 +1,35 @@
+Shane Smith
+ssmith30
+Winter 2021
+pa 7: BigIntegers
+
+--------------------------------------------
+DESCRIPTION
+
+ For this assignment we created a BigInteger ADT
+ and used it with our existing List ADT to
+ do arithmetic on extremely large integers
+
+
+--------------------------------------------
+FILES
+-Arithmetic.c
+-BigInteger.c
+-BigInteger.h
+-BigIntegerTest.c
+-List.c
+-List.h
+-ListTest.c
+-Makefile
+-README
+
+---------------------------------------------
+NOTES
+- keeps failing Arithmetic.c tests 3, 4, 5, 
+  I believe this is because multiply is getting misaligned
+  with the intended base. I'll keep testing but i doubt i'll manage it
+  in time.
+
+
+
+

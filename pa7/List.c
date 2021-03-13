@@ -124,10 +124,12 @@ LIST_ELEMENT get(List L){
   if(length(L) <= 0){
     printf("List Error: calling get on empty list\n");
     exit(EXIT_FAILURE);
+    //return 0;
   }
   if(index(L) < 0){
     printf("List Error: calling get on list with undefine index\n");
     exit(EXIT_FAILURE);
+    //return 0;
   }
   return(L->cursor->data);
 }
@@ -138,6 +140,8 @@ LIST_ELEMENT get(List L){
 int ListEquals(List A, List B){
   if(length(A) != length(B)){ // if their lengths aren't the same 
     return(0);                // obviously they aren't equal
+  }else if ( length(A) == 0){
+    return(1);
   }
   //printf("made it to equals\n");
   int i;
