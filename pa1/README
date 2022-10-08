@@ -10,6 +10,16 @@ For this assignment, we created a List ADT and a program Lex that uses the list 
 lines from a input file into lexographical order.
 
 
+------------------------------------------------------------------------------
+HOW TO USE
+
+make                   makes Lex
+make ListClient        makes ListClient
+make clean             removes all binaries
+make checkClient       checks ListClient for memory errors
+make checkLex          checks Lex for memory errors
+------------------------------------------------------------------------------
+
 --------------------------------------------
 FILES
 
